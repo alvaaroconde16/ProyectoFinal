@@ -42,7 +42,6 @@ class Empleado(models.Model):
 
 class Reserva(models.Model):
     cliente = models.ForeignKey(Usuario, on_delete=models.CASCADE, limit_choices_to={'rol': 'cliente'})
-    peluqueria = models.ForeignKey(Peluqueria, on_delete=models.CASCADE)
     servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE)
     empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
     fecha = models.DateField()
