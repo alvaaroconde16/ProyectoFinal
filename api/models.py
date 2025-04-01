@@ -17,6 +17,12 @@ class Usuario(AbstractUser):
     user_permissions = models.ManyToManyField('auth.Permission', related_name='usuario_permissions', blank=True)
 
 
+class Cliente(models.Model):
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
+    direccion = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=15)
+
+
 class Peluqueria(models.Model):
     nombre = models.CharField(max_length=100)
     direccion = models.CharField(max_length=100)
@@ -35,7 +41,7 @@ class Servicio(models.Model):
 
 
 class Empleado(models.Model):
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     peluqueria = models.ForeignKey(Peluqueria, on_delete=models.CASCADE)
     servicios = models.ManyToManyField(Servicio)
 

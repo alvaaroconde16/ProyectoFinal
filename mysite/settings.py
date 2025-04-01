@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -47,8 +48,9 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'django_bootstrap_icons',
     'rest_framework',
-    'oauth2_provider',
+    #'oauth2_provider',
     'corsheaders',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -65,8 +67,8 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "http://localhost:4200",
     "http://0.0.0.0:8081",
+    "http://127.0.0.1:8081",
     "http://alvaroconde.pythonanywhere.com",
 ]
 
@@ -154,7 +156,7 @@ MEDIA_URL = '/media/'  # URL que será usada en las plantillas para acceder a ar
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Ruta física en el sistema de archivos donde se guardarán los archivos
 
 
-# AUTH_USER_MODEL = 'viajes.Usuario'
+AUTH_USER_MODEL = 'api.Usuario'
 
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
@@ -165,17 +167,27 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 
-OAUTH2_PROVIDER = {
-    'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Acceso a los grupos'},
-    'ACCESS_TOKEN_EXPIRE_SECONDS': 360000000,
-}
+#OAUTH2_PROVIDER = {
+#    'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Acceso a los grupos'},
+#    'ACCESS_TOKEN_EXPIRE_SECONDS': 360000000,
+#}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        #'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
 }
