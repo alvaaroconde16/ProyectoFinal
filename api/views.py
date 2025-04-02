@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from .serializers import UsuarioSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 # Create your views here.
@@ -24,33 +25,15 @@ def index(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_view(request):
+    data = request.data
+    data['password'] = make_password(data['password']) # Encriptar la contraseña
     if request.method == 'POST':
         serializer = UsuarioSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
-
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def login_view(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
-
-    user = authenticate(username=username, password=password)
-
-    if user is not None:
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-            'username': user.username,
-        })
-    else:
-        return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-    
 
 
 @api_view(['GET'])

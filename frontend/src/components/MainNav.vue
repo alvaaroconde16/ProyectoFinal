@@ -1,5 +1,5 @@
 <template>
-  <header class="px-10 py-5 bg-gray-700 flex justify-between items-center absolute top-0 w-full z-10 text-white">
+  <header class="px-10 py-5 bg-gray-700 flex justify-between items-center text-white">
     <div>
       <Logo />
     </div>
@@ -13,53 +13,71 @@
       </template>
 
       <template v-else>
-        <button @click="isModalOpen = true" class="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700">
+        <button @click="isLoginModalOpen = true" class="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700">
           Iniciar Sesión
         </button>
       </template>
     </nav>
   </header>
 
-  <!-- Modal de Login -->
-  <Login :isModalOpen="isModalOpen" @closeModal="isModalOpen = false" @loginSuccess="handleLoginSuccess" />
+  <!-- Modales -->
+  <Login 
+    :isModalOpen="isLoginModalOpen" 
+    @closeModal="isLoginModalOpen = false" 
+    @loginSuccess="handleLoginSuccess"
+    @openRegisterModal="openRegisterFromLogin"
+  />
+  
+  <Register 
+    :isModalOpen="isRegisterModalOpen" 
+    @closeModal="isRegisterModalOpen = false" 
+    @registerSuccess="handleRegisterSuccess"
+  />
 </template>
 
-<script>
-import Login from '../registration/Login.vue';
-export default {
-  components: { Login },
-};
-</script>
-
 <script setup>
-  import { ref, onMounted, defineEmits } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
-  import { getUser, logout, register } from '@/services/axios';
+  import { getUser, logout } from '@/services/axios';
+  import Login from '../registration/Login.vue';
+  import Register from '../registration/Register.vue';
   import Logo from './Logo.vue';
 
   const user = ref(null);
-  const isModalOpen = ref(false);
+  const isLoginModalOpen = ref(false);
+  const isRegisterModalOpen = ref(false);
   const router = useRouter();
-  const emit = defineEmits(['openLoginModal']); // Emitimos evento para abrir el modal
 
   const checkAuth = () => {
     user.value = getUser();
   };
 
-  // Se ejecuta cuando el componente se monta
   onMounted(() => {
     checkAuth();
   });
 
-  // Manejo de cierre de sesión
   const handleLogout = () => {
     logout();
     user.value = null;
-    router.push('/'); // Redirigir al Home
+    router.push('/');
   };
 
-  // Manejo de inicio de sesión
   const handleLoginSuccess = () => {
-    checkAuth(); // Actualizar el usuario después del login
+    checkAuth();
+  };
+
+  // Cerrar modal de login y abrir modal de registro
+  const openRegisterFromLogin = () => {
+    isLoginModalOpen.value = false;
+    setTimeout(() => {
+      isRegisterModalOpen.value = true;
+    }, 300); // Pequeño delay para evitar conflictos visuales
+  };
+
+  const handleRegisterSuccess = () => {
+    isRegisterModalOpen.value = false;
+    setTimeout(() => {
+      isLoginModalOpen.value = true;
+    }, 300); // Pequeño delay para mejorar la experiencia
   };
 </script>

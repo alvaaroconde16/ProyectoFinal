@@ -18,6 +18,7 @@ export const login = async (username, password) => {
     });
 
     console.log(userResponse.data)
+    localStorage.setItem('user', JSON.stringify(userResponse.data))
 
     return { token: response.data.access, user: userResponse.data }; // Retornamos el token y el usuario
   } catch (error) {
@@ -26,13 +27,12 @@ export const login = async (username, password) => {
   }
 }
 
-export const register = async (username, password) => {
+export const register = async (username, email, telefono, password) => {
   try {
-    const response = await axios.post(`${API_URL}token/register/`, {
-      username: username,
-      nombre: nombre,
-      telefono: telefono,
-      email: email,
+    const response = await axios.post(`${API_URL}register/`, {
+      username,
+      email,
+      telefono,
       password: password,
     });
     return response.data; //Aqui recibimos el token
@@ -45,7 +45,7 @@ export const register = async (username, password) => {
 export const getUser = () => {
   const user = localStorage.getItem('user');
   if (user) {
-    return (user);
+    return JSON.parse(user);
   }
   return null;
 }
