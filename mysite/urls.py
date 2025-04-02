@@ -21,9 +21,6 @@ from django.conf.urls.static import static
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
-
 
 
 class Protected(APIView):
@@ -39,10 +36,6 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path("__debug__/", include("debug_toolbar.urls")),
     path('accounts/', include('django.contrib.auth.urls')),
-
-    # Rutas para JWT Authentication
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Obtener token
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Refrescar token
 ]
 
 if settings.DEBUG:

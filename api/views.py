@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from .serializers import UsuarioSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 # Create your views here.
 
@@ -34,6 +34,7 @@ def register_view(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def login_view(request):
     username = request.data.get('username')
     password = request.data.get('password')
@@ -45,9 +46,25 @@ def login_view(request):
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
+            'username': user.username,
         })
     else:
         return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_profile(request):
+    user = request.user  # El usuario autenticado
+    # Puedes devolver cualquier campo del modelo User o modelos personalizados
+    user_data = {
+        "username": user.username,
+        "email": user.email,
+        'rol': user.rol,
+        'telefono': user.telefono,
+    }
+    return Response(user_data)
 
 
 ########################################################################################################################################################################
